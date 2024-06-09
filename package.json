@@ -7,6 +7,11 @@
   "publishConfig": {
     "access": "public"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DEADST0NE/nest-rabbitmq"
+  },
+  "homepage": "https://github.com/DEADST0NE/nest-rabbitmq",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
