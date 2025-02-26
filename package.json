@@ -28,6 +28,7 @@
     "@nestjs/core": "^10.3.9",
     "@nestjs/platform-express": "^10.3.9",
     "amqplib": "^0.10.4",
+    "buffer": "^6.0.3",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },
