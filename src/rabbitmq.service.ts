@@ -31,6 +31,15 @@ export class RabbitmqService implements OnModuleInit, OnModuleDestroy {
 
   private readonly logger = new Logger(RabbitmqService.name);
 
+  private readonly subscriptions: Map<
+    string,
+    {
+      queue: string;
+      callback: QueueCallback;
+      options: QueueOptions;
+    }
+  > = new Map();
+
   connected = false;
   private stayAlive = false;
   private channel?: Channel;
@@ -82,6 +91,8 @@ export class RabbitmqService implements OnModuleInit, OnModuleDestroy {
     this.channel = await this.connection.createChannel();
     this.state = RabbitReadyState.opened;
     this.logger.debug(`Rabbit channel created`);
+
+    await this.resubscribeToQueues();
   }
 
   async reconnect() {
@@ -142,6 +153,8 @@ export class RabbitmqService implements OnModuleInit, OnModuleDestroy {
     callback: QueueCallback,
     options: QueueOptions = {},
   ): Promise<string> {
+    this.subscriptions.set(queue, { queue, callback, options });
+
     const consumer = await this.channel.consume(
       queue,
       async (msg) => {
@@ -171,5 +184,20 @@ export class RabbitmqService implements OnModuleInit, OnModuleDestroy {
       },
     );
     return consumer.consumerTag;
+  }
+
+  async resubscribeToQueues() {
+    if (this.subscriptions.size === 0) return;
+    this.logger.debug(`Resubscribing to queues...`);
+
+    for (const sub of this.subscriptions.values()) {
+      await this.channel.assertQueue(sub.queue, {
+        durable: true,
+        ...sub.options,
+      });
+      await this.subscribeToQueue(sub.queue, sub.callback, sub.options);
+    }
+
+    this.logger.debug(`All queues resubscribed.`);
   }
 }
