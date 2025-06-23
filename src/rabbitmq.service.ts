@@ -70,6 +70,7 @@ export class RabbitmqService implements OnModuleInit, OnModuleDestroy {
           username: url.username,
           password: url.password,
           vhost: url.pathname.slice(1),
+          frameMax: this.options.frameMax,
         },
         {
           clientProperties: { connection_name: this.options.connectionName },

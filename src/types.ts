@@ -43,6 +43,7 @@ export type QueueCallback = (
 export interface RabbitModuleOptions {
   url: string;
   connectionName: string;
+  frameMax?: number;
 }
 
 export interface RabbitModuleAsyncOptions {
